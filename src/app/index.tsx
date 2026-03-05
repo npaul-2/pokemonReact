@@ -1,44 +1,30 @@
 import { useState } from "react";
-import { ActivityIndicator, Button, Image, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { fetchPokemon } from "../services/pokemonApi";
+
 export default function HomeScreen() {
   const [pokemonName, setPokemonName] = useState("");
-
-  const [pokemon, setPokemon] = useState(null);
+  const [pokemon, setPokemon] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-async function handleSearch() {
-    const q = pokemonName.trim();
-    if (!q) {
-      setError("Please enter a name");
-      return;
-    }
-
-    setError(null);
+  async function handleSearch() {
+    if (!pokemonName.trim()) return;
     setLoading(true);
-    setPokemon(null);
-
+    setError(null);
     try {
-      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${q.toLowerCase()}`);
-
-      if (!res.ok) {
-        throw new Error("Pokemon not found. Try playing a game that's fun");
-      }
-
-      const data = await res.json(); 
-      
-      console.log("JSON response:", data);
+      const data = await fetchPokemon(pokemonName);
       setPokemon(data);
-
-    } catch (er) {
-      setError(er.message);
+    } catch (err: any) {
+      setError(err.message);
+      setPokemon(null);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Pokemon Search</Text>
 
       <TextInput
@@ -52,68 +38,65 @@ async function handleSearch() {
 
       <Button title="Get Pokemon" onPress={handleSearch} disabled={loading} />
 
-      {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop:20}}/>}
-      {error && (
-        <Text style={styles.errorText}>{error}</Text>
-      )}
-      {pokemon && (
+      {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />}
+      
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-        
+      {pokemon && !loading && (
         <View style={styles.resultCard}>
-
           <Text style={styles.pokemonName}>
             #{pokemon.id} {pokemon.name?.toUpperCase()}
-          </Text>          
+          </Text>
 
           <Image 
-            source={{ uri: pokemon.sprites.front_default }} 
+            source={{ uri: pokemon.image }} 
             style={styles.sprite} 
           />
 
           <View style={styles.typesContainer}>
-           <Text style={styles.label}>Types: </Text>
-            {pokemon.types.map((typeInfo, index) => (
-             <Text key={index} style={styles.typeBadge}>
-              {typeInfo.type.name.toUpperCase()}
-             </Text>
+            <Text style={styles.label}>Types: </Text>
+            {pokemon.types.map((typeName: string, index: number) => (
+              <Text key={index} style={styles.typeBadge}>
+                {typeName.toUpperCase()}
+              </Text>
             ))}
           </View>
 
           <View style={styles.movesContainer}>
             <Text style={styles.label}>First 5 Moves:</Text>
-            {pokemon.moves.slice(0, 5).map((moveItem, index) => (
-            <Text key={index} style={styles.moveText}>
-              • {moveItem.move.name.replace("-", " ")}
-            </Text>
+            {pokemon.moves.slice(0, 5).map((moveName: string, index: number) => (
+              <Text key={index} style={styles.moveText}>
+                • {moveName.replace("-", " ")}
+              </Text>
             ))}
           </View>
 
           <View style={styles.section}>
-           <Text style={styles.label}>Abilities:</Text>
+            <Text style={styles.label}>Abilities:</Text>
             <View style={styles.abilityRow}>
-              {pokemon.abilities.map((item, index) => (
-              <Text key={index} style={styles.abilityBadge}>
-                {item.ability.name.replace("-", " ")}
-                {item.is_hidden && " (Hidden)"}
-              </Text>
+              {pokemon.abilities.map((abilityObj: any, index: number) => (
+                <Text key={index} style={styles.abilityBadge}>
+                  {abilityObj.name.replace("-", " ")}
+                  {abilityObj.is_hidden && " (Hidden)"}
+                </Text>
               ))}
             </View>
           </View>
 
-          <Text>Weight: {pokemon.weight}</Text>
+          <Text style={{ marginTop: 10 }}>Weight: {pokemon.weight}</Text>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-    gap: 12,
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 24,
@@ -126,6 +109,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     padding: 10,
+    marginBottom: 10,
   },
   errorText: {
     color: "red",
@@ -135,24 +119,26 @@ const styles = StyleSheet.create({
   resultCard: {
     marginTop: 20,
     padding: 15,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#f9f9f9",
     borderRadius: 10,
     alignItems: "center",
     width: "100%",
+    borderWidth: 1,
+    borderColor: "#eee",
   },
   pokemonName: {
-    fontSize: 18,
-    fontWeight: "bold"
+    fontSize: 20,
+    fontWeight: "bold",
   },
   movesContainer: {
     marginTop: 15,
-    alignItems: "flex-start", // Aligns the list to the left
+    alignItems: "flex-start",
     width: "100%",
   },
   moveText: {
     fontSize: 14,
     color: "#555",
-    textTransform: "capitalize", // Automatically capitals the first letter
+    textTransform: "capitalize",
     marginLeft: 10,
   },
   label: {
@@ -161,7 +147,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   typesContainer: {
-    flexDirection: "row", // Puts types side-by-side
+    flexDirection: "row",
     gap: 8,
     marginTop: 8,
     alignItems: "center",
@@ -172,12 +158,11 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 15,
     fontSize: 12,
-    overflow: "hidden", // Required for borderRadius on some Android components
+    overflow: "hidden",
   },
   sprite: {
     width: 150,
     height: 150,
-    marginBottom: -10, // Pulls the name closer to the image
   },
   section: {
     marginTop: 10,
