@@ -1,27 +1,15 @@
-import { useState } from "react";
+import { usePokemonController } from "@/controllers/usePokemonController";
 import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import { fetchPokemon } from "../services/pokemonApi";
 
 export default function HomeScreen() {
-  const [pokemonName, setPokemonName] = useState("");
-  const [pokemon, setPokemon] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleSearch() {
-    if (!pokemonName.trim()) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchPokemon(pokemonName);
-      setPokemon(data);
-    } catch (err: any) {
-      setError(err.message);
-      setPokemon(null);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const { 
+    pokemonName, 
+    setPokemonName, 
+    pokemon, 
+    loading, 
+    error, 
+    handleSearch 
+  } = usePokemonController();   
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -64,7 +52,7 @@ export default function HomeScreen() {
 
           <View style={styles.movesContainer}>
             <Text style={styles.label}>First 5 Moves:</Text>
-            {pokemon.moves.slice(0, 5).map((moveName: string, index: number) => (
+            {pokemon.moves.map((moveName: string, index: number) => (
               <Text key={index} style={styles.moveText}>
                 • {moveName.replace("-", " ")}
               </Text>
@@ -74,11 +62,10 @@ export default function HomeScreen() {
           <View style={styles.section}>
             <Text style={styles.label}>Abilities:</Text>
             <View style={styles.abilityRow}>
-              {pokemon.abilities.map((abilityObj: any, index: number) => (
-                <Text key={index} style={styles.abilityBadge}>
-                  {abilityObj.name.replace("-", " ")}
-                  {abilityObj.is_hidden && " (Hidden)"}
-                </Text>
+             {pokemon.abilities.map((abilityName: string, index: number) => (
+              <Text key={index} style={styles.abilityBadge}>
+                {abilityName.replace("-", " ")}
+              </Text>
               ))}
             </View>
           </View>
