@@ -3,6 +3,7 @@ import { usePokemonController } from "@/controllers/usePokemonController";
 import PokemonView from "@/components/PokemonView";
 
 export default function HomeScreen() {
+  // calls controller hook
   const { 
     pokemonName, 
     setPokemonName, 
@@ -16,6 +17,7 @@ export default function HomeScreen() {
   } = usePokemonController();   
 
   return (
+    // renders view
     <PokemonView 
       pokemonName={pokemonName}
       setPokemonName={setPokemonName}

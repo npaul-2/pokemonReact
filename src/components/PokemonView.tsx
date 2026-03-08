@@ -1,13 +1,13 @@
 import { Pokemon } from "@/models/Pokemon";
 import React, { useEffect, useRef } from "react";
 import {
-    ActivityIndicator,
-    Animated,
-    Button,
-    Easing,
-    Image,
-    ScrollView, StyleSheet, Text, TextInput,
-    View
+  ActivityIndicator,
+  Animated,
+  Button,
+  Easing,
+  Image,
+  ScrollView, StyleSheet, Text, TextInput,
+  View
 } from "react-native";
 
 interface PokemonViewProps {
@@ -35,14 +35,18 @@ export default function PokemonView({
 
 }: PokemonViewProps) {
 
+  // values for animation
   const fadeAnim = useRef(new Animated.Value(0)).current; 
   const spinAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // waits until pokemon changes 
     if (pokemon) {
+      // resets animation values
       fadeAnim.setValue(0);
       spinAnim.setValue(0);
-
+      
+      // fades and spins at the same time
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -57,9 +61,9 @@ export default function PokemonView({
         }),
       ]).start();
     }
-  }, [pokemon]); 
+  }, [pokemon]); // trigger
 
-  
+  // makes spin value be in degrees 
   const spin = spinAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '720deg'], 
@@ -78,6 +82,7 @@ export default function PokemonView({
         autoCorrect={false}
       />
 
+      {/* calls onSearch */}
       <Button 
         title="Get Pokemon" 
         onPress={() => onSearch()} 
@@ -88,6 +93,7 @@ export default function PokemonView({
       
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
+      {/* Makes favorite chips to click */}
       <View style={styles.favoritesContainer}>
         <Text style={styles.label}>Favorites:</Text>
         <View style={styles.favoriteRow}>
@@ -102,7 +108,7 @@ export default function PokemonView({
          ))}
     </View>
   </View>
-
+      {/* doesn't display unless its done loading and it has a valid pokemon */}
       {pokemon && !loading && (
         <Animated.View style={[
           styles.resultCard, 

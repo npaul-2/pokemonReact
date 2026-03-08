@@ -3,7 +3,9 @@ import { PokemonBuilder } from "@/models/PokemonBuilder";
 import { favoritesStorage } from "@/services/favoritesStorage";
 import { useEffect, useState } from "react";
 
+// main hook
 export const usePokemonController = () => {
+  // useState hooks for app status
   const [pokemonName, setPokemonName] = useState("");
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [loading, setLoading] = useState(false);
@@ -16,13 +18,16 @@ export const usePokemonController = () => {
       setFavorites(saved);
     };
     initFavorites();
-  }, []);
+  }, []); // happens once at startup
 
   useEffect(() => {
     favoritesStorage.save(favorites);
-  }, [favorites]);
+  }, [favorites]); //triggers if favorites changes
   
+  // calculates if pokemon is favorite
   const isFavorite = pokemon ? favorites.includes(pokemon.name) : false;
+  
+  // search function
   async function handleSearch(nameOverride?: string) {
     const query = (nameOverride || pokemonName).trim().toLowerCase();
     if (!query) {
@@ -35,12 +40,15 @@ export const usePokemonController = () => {
     setPokemon(null);
 
     try {
+      // fetches pokemon json responce
       const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${query}`);
       
       if (!res.ok) throw new Error("Pokemon not found");
 
+      // puts responce in data after it resolves 
       const data = await res.json();
 
+      // calls builder with data
       const formattedPokemon = new PokemonBuilder()
         .setName(data.name)
         .setId(data.id)
@@ -50,6 +58,7 @@ export const usePokemonController = () => {
         .setMoves(data.moves)
         .build();
 
+      // sets states
       setPokemon(formattedPokemon);
       setPokemonName(data.name);
     } catch (err: any) {
@@ -63,8 +72,10 @@ export const usePokemonController = () => {
     if (!pokemon) return;
 
     if (favorites.includes(pokemon.name)) {
+      // removes
       setFavorites(favorites.filter((fav) => fav !== pokemon.name));
     } else {
+      // adds
       setFavorites([...favorites, pokemon.name]);
     }
   };

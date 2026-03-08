@@ -1,8 +1,10 @@
+// long term storage
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FAVORITES_KEY = '@pokemon_favorites';
 
 export const favoritesStorage = {
+  // stores json as string
   async save(favorites: string[]): Promise<void> {
     try {
       const jsonValue = JSON.stringify(favorites);
@@ -12,6 +14,7 @@ export const favoritesStorage = {
     }
   },
 
+  // loads string back as json
   async load(): Promise<string[]> {
     try {
       const jsonValue = await AsyncStorage.getItem(FAVORITES_KEY);

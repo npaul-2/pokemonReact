@@ -1,3 +1,4 @@
+// sets data types
 export interface Pokemon {
   name: string;
   id: number;

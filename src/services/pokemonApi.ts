@@ -1,9 +1,12 @@
+// unused file in final implementation
+// another way to call the api
+
 export interface PokemonData {
   id: number;
   name: string;
   image: string;
   types: string[];
-  weight: number;
+  //weight: number;
   abilities: { name: string; is_hidden: boolean }[];
   moves: string[];
 }
@@ -22,7 +25,7 @@ export async function fetchPokemon(name: string): Promise<PokemonData> {
     name: data.name,
     image: data.sprites.front_default,
     types: data.types.map((t: any) => t.type.name),
-    weight: data.weight,
+    //weight: data.weight,
     // Extract name and status for abilities
     abilities: data.abilities.map((a: any) => ({
       name: a.ability.name,

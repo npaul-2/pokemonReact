@@ -1,8 +1,10 @@
 import { Pokemon } from "./Pokemon";
 
 export class PokemonBuilder {
+  // makes unfinished object
   private pokemon: Partial<Pokemon> = {};
 
+  // methods set data correctly
   setName(name: string): PokemonBuilder {
     this.pokemon.name = name;
     return this;
@@ -14,11 +16,8 @@ export class PokemonBuilder {
   }
 
   setImageFromSprites(sprites: any): PokemonBuilder {
-    //this.pokemon.image = sprites.other?.['official-artwork']?.front_default || sprites.front_default;
+    // higher rez art: this.pokemon.image = sprites.other?.['official-artwork']?.front_default || sprites.front_default;
     this.pokemon.image = sprites.front_default;
-    //this.pokemon.image = this.pokemon.image;
-    //source={{ uri: pokemon.image }} 
-    //        style={styles.sprite} 
     return this;
   }
 
@@ -37,6 +36,7 @@ export class PokemonBuilder {
     return this;
   }
 
+  // returns finished object
   build(): Pokemon {
     return this.pokemon as Pokemon;
   }
