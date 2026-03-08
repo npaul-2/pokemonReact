@@ -8,7 +8,10 @@ interface PokemonViewProps {
   pokemon: Pokemon | null;
   loading: boolean;
   error: string | null;
-  onSearch: () => void;
+  favorites: string[];
+  isFavorite: boolean;
+  toggleFavorite: () => void;
+  onSearch: (name?: string) => void;  
 }
 
 export default function PokemonView({
@@ -18,6 +21,10 @@ export default function PokemonView({
   loading,
   error,
   onSearch,
+  favorites,
+  isFavorite,
+  toggleFavorite
+
 }: PokemonViewProps) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -38,8 +45,32 @@ export default function PokemonView({
       
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
+      <View style={styles.favoritesContainer}>
+        <Text style={styles.label}>Favorites:</Text>
+        <View style={styles.favoriteRow}>
+         {favorites.map((fav) => (
+            <Text 
+              key={fav} 
+             style={styles.favoriteChip} 
+            onPress={() => onSearch(fav)}
+            >
+              {fav}
+         </Text>
+         ))}
+    </View>
+  </View>
+
       {pokemon && !loading && (
         <View style={styles.resultCard}>
+
+        <View style={styles.favoriteButtonContainer}>
+            <Button 
+              title={isFavorite ? "★ Unfavorite" : "☆ Add to Favorites"} 
+              onPress={toggleFavorite}
+              color={isFavorite ? "#f39c12" : "#2980b9"}
+             />
+          </View>
+
           <Text style={styles.pokemonName}>
             #{pokemon.id} {pokemon.name?.toUpperCase()}
           </Text>
@@ -170,4 +201,29 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     textTransform: "capitalize",
   },
+  favoritesContainer: {
+    width: "100%",
+    marginTop: 20,
+    alignItems: "flex-start",
+  },
+  favoriteRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 5,
+  },
+  favoriteChip: {
+    backgroundColor: "#ececec",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#555",
+    overflow: "hidden",
+  },
+  favoriteButtonContainer: {
+    marginBottom: 10,
+    width: "100%",
+  }
 });

@@ -67,6 +67,15 @@ It needs the pokemon model, the pokemonName input, the loading and error states,
 What would break if the view tried to call the API directly?
 The view is just for viewing results, calling the API is the controllers job. If the view called the API it could override the controller and break the output
 
+## Checkpoint 10
+Why should favorites live in the controller and not the view?
+The view should only handle displaying items, not storing data
+
+What does “derived state” mean for isFavorite?
+The derived state is based on the existing state and not being stored in a useState.
+Without it the favorites would desync when you search for another pokemon.
+
+
 # Default how to use Expo section Below
 
 # Welcome to your Expo app 👋

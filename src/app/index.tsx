@@ -9,7 +9,10 @@ export default function HomeScreen() {
     pokemon, 
     loading, 
     error, 
-    handleSearch 
+    handleSearch,
+    favorites,
+    isFavorite,
+    toggleFavorite  
   } = usePokemonController();   
 
   return (
@@ -20,6 +23,9 @@ export default function HomeScreen() {
       loading={loading}
       error={error}
       onSearch={handleSearch}
+      favorites={favorites}
+      isFavorite={isFavorite}
+      toggleFavorite={toggleFavorite}
     />
   );
 }

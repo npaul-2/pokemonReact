@@ -7,9 +7,11 @@ export const usePokemonController = () => {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<string[]>([]);
 
-  async function handleSearch() {
-    const query = pokemonName.trim().toLowerCase();
+  const isFavorite = pokemon ? favorites.includes(pokemon.name) : false;
+  async function handleSearch(nameOverride?: string) {
+    const query = (nameOverride || pokemonName).trim().toLowerCase();
     if (!query) {
       setError("Please enter a Pokemon name");
       return;
@@ -36,12 +38,23 @@ export const usePokemonController = () => {
         .build();
 
       setPokemon(formattedPokemon);
+      setPokemonName(data.name);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   }
+
+  const toggleFavorite = () => {
+    if (!pokemon) return;
+
+    if (favorites.includes(pokemon.name)) {
+      setFavorites(favorites.filter((fav) => fav !== pokemon.name));
+    } else {
+      setFavorites([...favorites, pokemon.name]);
+    }
+  };
 
   return {
     pokemonName,
@@ -50,5 +63,8 @@ export const usePokemonController = () => {
     loading,
     error,
     handleSearch,
+    favorites,
+    isFavorite,
+    toggleFavorite,
   };
 };
