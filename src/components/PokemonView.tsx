@@ -1,6 +1,14 @@
 import { Pokemon } from "@/models/Pokemon";
-import React from "react";
-import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useEffect, useRef } from "react";
+import {
+    ActivityIndicator,
+    Animated,
+    Button,
+    Easing,
+    Image,
+    ScrollView, StyleSheet, Text, TextInput,
+    View
+} from "react-native";
 
 interface PokemonViewProps {
   pokemonName: string;
@@ -26,6 +34,37 @@ export default function PokemonView({
   toggleFavorite
 
 }: PokemonViewProps) {
+
+  const fadeAnim = useRef(new Animated.Value(0)).current; 
+  const spinAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (pokemon) {
+      fadeAnim.setValue(0);
+      spinAnim.setValue(0);
+
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(spinAnim, {
+          toValue: 1,
+          duration: 2000,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [pokemon]); 
+
+  
+  const spin = spinAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '720deg'], 
+  });
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Pokemon Search</Text>
@@ -39,7 +78,11 @@ export default function PokemonView({
         autoCorrect={false}
       />
 
-      <Button title="Get Pokemon" onPress={onSearch} disabled={loading} />
+      <Button 
+        title="Get Pokemon" 
+        onPress={() => onSearch()} 
+        disabled={loading} 
+      />
 
       {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />}
       
@@ -61,7 +104,13 @@ export default function PokemonView({
   </View>
 
       {pokemon && !loading && (
-        <View style={styles.resultCard}>
+        <Animated.View style={[
+          styles.resultCard, 
+          { 
+            opacity: fadeAnim, 
+            transform: [{ rotate: spin }] 
+          }
+        ]}>
 
         <View style={styles.favoriteButtonContainer}>
             <Button 
@@ -99,7 +148,7 @@ export default function PokemonView({
               ))}
             </View>
           </View>
-        </View>
+        </Animated.View>
       )}
     </ScrollView>
   );

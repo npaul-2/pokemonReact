@@ -1,6 +1,7 @@
 import { Pokemon } from "@/models/Pokemon";
 import { PokemonBuilder } from "@/models/PokemonBuilder";
-import { useState } from "react";
+import { favoritesStorage } from "@/services/favoritesStorage";
+import { useEffect, useState } from "react";
 
 export const usePokemonController = () => {
   const [pokemonName, setPokemonName] = useState("");
@@ -9,6 +10,18 @@ export const usePokemonController = () => {
   const [error, setError] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
 
+  useEffect(() => {
+    const initFavorites = async () => {
+      const saved = await favoritesStorage.load();
+      setFavorites(saved);
+    };
+    initFavorites();
+  }, []);
+
+  useEffect(() => {
+    favoritesStorage.save(favorites);
+  }, [favorites]);
+  
   const isFavorite = pokemon ? favorites.includes(pokemon.name) : false;
   async function handleSearch(nameOverride?: string) {
     const query = (nameOverride || pokemonName).trim().toLowerCase();

@@ -75,6 +75,21 @@ What does “derived state” mean for isFavorite?
 The derived state is based on the existing state and not being stored in a useState.
 Without it the favorites would desync when you search for another pokemon.
 
+## Checkpoint 11
+Why is persistence implemented as a service?
+Since it's a service we just need to call it instead of setting up a storage ourselves
+
+What is the difference between “state” and “persisted state”?
+persistied state stores to hard device storage, not to working memory/ram like a normal state
+
+## Checkpoint 12
+Why does this animation belong in the view layer?
+View handles visuals, animation is just visual. It makes sence to use it as part of an existing view.
+
+What triggers the animation and why?
+The useEffect hook triggers it in the view after it sees that the pokemon object has changed
+
+
 
 # Default how to use Expo section Below
 
